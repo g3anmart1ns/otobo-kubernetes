@@ -1,5 +1,5 @@
 # otobo-kubernetes
 Lab - Deploy OTOBO
 
-# kubectl create ns otobo-system
+<code> kubectl create ns otobo-system</code>
 # kubectl apply -f .
