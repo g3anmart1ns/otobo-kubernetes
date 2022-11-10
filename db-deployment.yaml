@@ -2,17 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: otobo-db
-  name: otobo-db
+    app: db
+  name: db
   namespace: otobo-system
 spec:
   selector:
     matchLabels:
-      app: otobo-db
+      app: db
   template:
     metadata:
       labels:
-        app: otobo-db
+        app: db
     spec:
       containers:
         - args:
@@ -27,7 +27,7 @@ spec:
                   key: OTOBO_DB_ROOT_PASSWORD
                   name: env
           image: mariadb:10.5.5
-          name: otobo-db
+          name: db
           resources: {}
           volumeMounts:
             - mountPath: /var/lib/mysql
