@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+  labels:
+    app: daemon
+  name: daemon
+  namespace: otobo-system
+spec:
+  selector:
+    matchLabels:
+      app: daemon
+  template:
+    metadata:
+      labels:
+        app: daemon
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - command: ["/opt/otobo_install/entrypoint.sh"]
+          args: ["daemon"]
+          image: rotheross/otobo:rel-10_0_8
+          name: daemon
+          resources: {}
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /opt/otobo
+              name: opt-otobo
+      restartPolicy: Always
+      volumes:
+        - name: opt-otobo
+          persistentVolumeClaim:
+            claimName: opt-otobo

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: elastic
+  name: elastic
+  namespace: otobo-system
+spec:
+  selector:
+    matchLabels:
+      app: elastic
+  template:
+    metadata:
+      labels:
+        app: elastic
+    spec:
+      containers:
+        - env:
+            - name: ES_JAVA_OPTS
+              valueFrom:
+                configMapKeyRef:
+                  key: OTOBO_ELASTICSEARCH_ES_JAVA_OPTS
+                  name: env
+            - name: discovery.type
+              value: single-node
+          image: rotheross/otobo-elasticsearch:latest
+          name: elastic
+          resources: {}
+          securityContext:
+            capabilities:
+              add:
+                - SYS_CHROOT
+                - CAP_SETUID
+                - CAP_SETGID
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: elasticsearch-data
+      restartPolicy: Always
+      volumes:
+        - name: elasticsearch-data
+          persistentVolumeClaim:
+            claimName: elasticsearch-data

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: web
+  name: web
+  namespace: otobo-system
+spec:
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - command: ["/opt/otobo_install/entrypoint.sh"]
+          args: ["web"]
+          env:
+            - name: OTOBO_DB_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: OTOBO_DB_ROOT_PASSWORD
+                  name: env
+          image: rotheross/otobo:rel-10_0_8
+          name: web
+          ports:
+            - containerPort: 5000
+          resources: {}
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - mountPath: /opt/otobo
+              name: opt-otobo
+      restartPolicy: Always
+      volumes:
+        - name: opt-otobo
+          persistentVolumeClaim:
+            claimName: opt-otobo

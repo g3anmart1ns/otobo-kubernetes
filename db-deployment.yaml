@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: otobo-db
+  name: otobo-db
+  namespace: otobo-system
+spec:
+  selector:
+    matchLabels:
+      app: otobo-db
+  template:
+    metadata:
+      labels:
+        app: otobo-db
+    spec:
+      containers:
+        - args:
+            - --max-allowed-packet=68157440
+            - --character-set-server=utf8mb4
+            - --collation-server=utf8mb4_unicode_ci
+            - --innodb-log-file-size=268435456
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: OTOBO_DB_ROOT_PASSWORD
+                  name: env
+          image: mariadb:10.5.5
+          name: otobo-db
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: mariadb-data
+      restartPolicy: Always
+      volumes:
+        - name: mariadb-data
+          persistentVolumeClaim:
+            claimName: mariadb-data
